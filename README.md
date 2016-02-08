@@ -47,3 +47,8 @@ YouTubeRails.youtube_embed_url_only("http://youtu.be/cD4TAgdS_Xw")
 YouTubeRails.extract_video_image("https://youtu.be/cD4TAgdS_Xw")
 => "https://i.ytimg.com/vi/cD4TAgdS_Xw/hqdefault.jpg"
 ```
+
+```ruby
+YouTubeRails.extract_video_image("https://youtu.be/cD4TAgdS_Xw", 'high') // Params: default, medium, high, maximum
+=> "https://i.ytimg.com/vi/cD4TAgdS_Xw/mqdefault.jpg"
+```

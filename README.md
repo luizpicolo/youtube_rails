@@ -6,7 +6,7 @@ This is based on gem https://github.com/datwright/youtube_addy by **David Wright
 **Author:** Luiz Picolo
 
 ## INSTALL
-`gem install youtube_addy`
+`gem install youtube_rails`
 
 or add in your gemfile
 

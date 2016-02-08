@@ -1,4 +1,5 @@
-# Youtube Rails
+# Youtube Rails    
+[![Gem Version](https://badge.fury.io/rb/youtube_rails.svg)](https://badge.fury.io/rb/youtube_rails)    
 Helper to read in YouTube urls and parse the video id and generate the youtube embed HTML code
 
 This is based on gem https://github.com/datwright/youtube_addy by **David Wright** **(Discontinued)**. Thanks so much

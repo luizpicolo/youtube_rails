@@ -3,7 +3,7 @@ Helper to read in YouTube urls and parse the video id and generate the youtube e
 
 This is based on gem https://github.com/datwright/youtube_addy by **David Wright** **(Discontinued)**. Thanks so much
 
-**Author: ** Luiz Picolo
+**Author:** Luiz Picolo
 
 ## INSTALL
 `gem install youtube_addy`

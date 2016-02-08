@@ -41,7 +41,7 @@ class TestYouTubeRails < Test::Unit::TestCase
     assert_equal shortened_url_https, YouTubeRails.youtube_shortened_url(embed_url, ssl: true)
     assert_equal shortened_url_https, YouTubeRails.youtube_shortened_url(regular_url, ssl: true)
   end
-  
+
   def test_youtube_embed_url
     vid_id                  = "cD4TAgdS_Xw"
     regular_url             = "http://www.youtube.com/watch?v=#{ vid_id }"

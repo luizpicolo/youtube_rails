@@ -49,6 +49,7 @@ YouTubeRails.extract_video_image("https://youtu.be/cD4TAgdS_Xw")
 ```
 
 ```ruby
-YouTubeRails.extract_video_image("https://youtu.be/cD4TAgdS_Xw", 'high') // Params: default, medium, high, maximum
+# Params: default, medium, high, maximum
+YouTubeRails.extract_video_image("https://youtu.be/cD4TAgdS_Xw", 'high')
 => "https://i.ytimg.com/vi/cD4TAgdS_Xw/mqdefault.jpg"
 ```

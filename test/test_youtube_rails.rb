@@ -64,10 +64,10 @@ class TestYouTubeRails < Test::Unit::TestCase
     image_high_quality     = "https://i.ytimg.com/vi/cD4TAgdS_Xw/hqdefault.jpg"
     image_sd_quality        = "https://i.ytimg.com/vi/cD4TAgdS_Xw/sddefault.jpg"
 
-    assert_equal image_default, YouTubeRails.youtube_video_image(regular_url)
-    assert_equal image_default, YouTubeRails.youtube_video_image(regular_url, 'default')
-    assert_equal image_medium_quality, YouTubeRails.youtube_video_image(regular_url, 'medium')
-    assert_equal image_high_quality, YouTubeRails.youtube_video_image(regular_url, 'high')
-    assert_equal image_sd_quality, YouTubeRails.youtube_video_image(regular_url, 'maximum')
+    assert_equal image_default, YouTubeRails.extract_video_image(regular_url)
+    assert_equal image_default, YouTubeRails.extract_video_image(regular_url, 'default')
+    assert_equal image_medium_quality, YouTubeRails.extract_video_image(regular_url, 'medium')
+    assert_equal image_high_quality, YouTubeRails.extract_video_image(regular_url, 'high')
+    assert_equal image_sd_quality, YouTubeRails.extract_video_image(regular_url, 'maximum')
   end
 end

@@ -41,7 +41,7 @@ class YouTubeRails
 	  "http#{'s' if options[:ssl]}://www.youtube.com/embed/#{ vid_id }"
   end
 
-  def self.youtube_video_image(youtube_url, version = 'default')
+  def self.extract_video_image(youtube_url, version = 'default')
     vid_id = extract_video_id(youtube_url)
     case version
       when 'default'

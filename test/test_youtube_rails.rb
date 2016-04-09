@@ -49,11 +49,13 @@ class TestYouTubeRails < Test::Unit::TestCase
     iframe_custom           = %(<iframe width="500" height="350" src="http://www.youtube.com/embed/#{vid_id}" frameborder="0" allowfullscreen></iframe>)
     iframe_default_with_ssl = %(<iframe width="420" height="315" src="https://www.youtube.com/embed/#{vid_id}" frameborder="0" allowfullscreen></iframe>)
     iframe_custom_with_ssl  = %(<iframe width="500" height="350" src="https://www.youtube.com/embed/#{vid_id}" frameborder="0" allowfullscreen></iframe>)
+    iframe_with_suggestions  = %(<iframe width="500" height="350" src="http://www.youtube.com/embed/#{vid_id}?rel=0" frameborder="0" allowfullscreen></iframe>)
 
     assert_equal iframe_default, YouTubeRails.youtube_embed_url(regular_url)
     assert_equal iframe_custom, YouTubeRails.youtube_embed_url(regular_url, 500, 350)
     assert_equal iframe_default_with_ssl, YouTubeRails.youtube_embed_url(regular_url, 420, 315, ssl: true)
     assert_equal iframe_custom_with_ssl, YouTubeRails.youtube_embed_url(regular_url, 500, 350, ssl: true)
+    assert_equal iframe_with_suggestions, YouTubeRails.youtube_embed_url(regular_url, 500, 350, suggestion: true)
   end
 
   def test_youtube_image

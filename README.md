@@ -35,7 +35,7 @@ YouTubeRails.extract_video_id("http://youtube.com/watch?v=Cd4g33ijd<script>this_
 ```
 
 ```ruby
-YouTubeRails.youtube_embed_url("http://youtu.be/cD4TAgdS_Xw",420,315)
+YouTubeRails.youtube_embed_url("http://youtu.be/cD4TAgdS_Xw", 420, 315)
 => '<iframe width="420" height="315" src="http://www.youtube.com/embed/cD4TAgdS_Xw" frameborder="0" allowfullscreen></iframe>'
 ```
 
@@ -53,4 +53,20 @@ YouTubeRails.extract_video_image("https://youtu.be/cD4TAgdS_Xw")
 # Params: default, medium, high, maximum
 YouTubeRails.extract_video_image("https://youtu.be/cD4TAgdS_Xw", 'high')
 => "https://i.ytimg.com/vi/cD4TAgdS_Xw/mqdefault.jpg"
+```
+
+## Options
+
+No final suggestion: `suggestion: false`
+
+```ruby
+YouTubeRails.youtube_embed_url("http://youtu.be/cD4TAgdS_Xw", 420, 315, { suggestion: false })
+=> '<iframe width="420" height="315" src="http://www.youtube.com/embed/cD4TAgdS_Xw?rel=0" frameborder="0" allowfullscreen></iframe>'
+```
+
+With ssl: `ssl: true`
+
+```ruby
+YouTubeRails.youtube_embed_url("http://youtu.be/cD4TAgdS_Xw", 420, 315, { ssl: false })
+=> '<iframe width="420" height="315" src="https://www.youtube.com/embed/cD4TAgdS_Xw" frameborder="0" allowfullscreen></iframe>'
 ```

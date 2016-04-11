@@ -57,16 +57,16 @@ YouTubeRails.extract_video_image("https://youtu.be/cD4TAgdS_Xw", 'high')
 
 ## Options
 
-No final suggestion: `suggestion: false`
+Final videos suggestion: `disable_suggestion: true` ( default is false )
 
 ```ruby
-YouTubeRails.youtube_embed_url("http://youtu.be/cD4TAgdS_Xw", 420, 315, { suggestion: false })
+YouTubeRails.youtube_embed_url("http://youtu.be/cD4TAgdS_Xw", 420, 315, { disable_suggestion: true })
 => '<iframe width="420" height="315" src="http://www.youtube.com/embed/cD4TAgdS_Xw?rel=0" frameborder="0" allowfullscreen></iframe>'
 ```
 
-With ssl: `ssl: true`
+With ssl: `ssl: true` ( default is false )
 
 ```ruby
-YouTubeRails.youtube_embed_url("http://youtu.be/cD4TAgdS_Xw", 420, 315, { ssl: false })
+YouTubeRails.youtube_embed_url("http://youtu.be/cD4TAgdS_Xw", 420, 315, { ssl: true })
 => '<iframe width="420" height="315" src="https://www.youtube.com/embed/cD4TAgdS_Xw" frameborder="0" allowfullscreen></iframe>'
 ```

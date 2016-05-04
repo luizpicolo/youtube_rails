@@ -7,11 +7,14 @@ This is based on gem https://github.com/datwright/youtube_addy by **David Wright
 **Author:** Luiz Picolo
 
 ## INSTALL
-`gem install youtube_rails`
+
+    gem install youtube_rails`
 
 or add in your gemfile
 
-`gem 'youtube_rails'`
+```ruby
+gem 'youtube_rails'
+```
 
 ## How to use
 ```ruby

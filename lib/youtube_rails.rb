@@ -22,23 +22,23 @@ class YouTubeRails
    end
  end
 
- def self.youtube_embed_url(youtube_url, width = 420, height = 315, options = {})
+ def self.youtube_embed_url(youtube_url, width = 420, height = 315, **options)
    %(<iframe width="#{width}" height="#{height}" src="#{ youtube_embed_url_only(youtube_url, options) }" frameborder="0" allowfullscreen></iframe>)
  end
 
-  def self.youtube_regular_url(youtube_url, options = {})
+  def self.youtube_regular_url(youtube_url, **options)
     vid_id = extract_video_id(youtube_url)
     "http#{'s' if options[:ssl]}://www.youtube.com/watch?v=#{ vid_id }"
   end
 
-  def self.youtube_shortened_url(youtube_url, options = {})
+  def self.youtube_shortened_url(youtube_url, **options)
     vid_id = extract_video_id(youtube_url)
     "http#{'s' if options[:ssl]}://youtu.be/#{ vid_id }"
   end
 
-  def self.youtube_embed_url_only(youtube_url, options = {})
+  def self.youtube_embed_url_only(youtube_url, **options)
     vid_id = extract_video_id(youtube_url)
-	  "http#{'s' if options[:ssl]}://www.youtube.com/embed/#{ vid_id }#{'?rel=0' if options[:disable_suggestion]}"
+    "http#{'s' if options[:ssl]}://www.youtube.com/embed/#{ vid_id }#{'?rel=0' if options[:disable_suggestion]}"
   end
 
   def self.extract_video_image(youtube_url, version = 'default')

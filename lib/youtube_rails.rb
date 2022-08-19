@@ -23,7 +23,7 @@ class YouTubeRails
   end
 
   def self.youtube_embed_url(youtube_url, width = 420, height = 315, **options)
-    %(<iframe width="#{width}" height="#{height}" src="#{ youtube_embed_url_only(youtube_url, options) }" frameborder="0" allowfullscreen></iframe>)
+    %(<iframe width="#{width}" height="#{height}" src="#{ youtube_embed_url_only(youtube_url, **options) }" frameborder="0" allowfullscreen></iframe>)
   end
 
   def self.youtube_regular_url(youtube_url, **options)

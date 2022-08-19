@@ -14,17 +14,17 @@ class YouTubeRails
   end
 
   def self.extract_video_id(youtube_url)
-   return nil if has_invalid_chars?(youtube_url)
+    return nil if has_invalid_chars?(youtube_url)
 
-   URL_FORMATS.values.inject(nil) do |result, format_regex|
-     match = format_regex.match(youtube_url)
-     match ? match[:id] : result
-   end
- end
+    URL_FORMATS.values.inject(nil) do |result, format_regex|
+      match = format_regex.match(youtube_url)
+      match ? match[:id] : result
+    end
+  end
 
- def self.youtube_embed_url(youtube_url, width = 420, height = 315, **options)
-   %(<iframe width="#{width}" height="#{height}" src="#{ youtube_embed_url_only(youtube_url, options) }" frameborder="0" allowfullscreen></iframe>)
- end
+  def self.youtube_embed_url(youtube_url, width = 420, height = 315, **options)
+    %(<iframe width="#{width}" height="#{height}" src="#{ youtube_embed_url_only(youtube_url, **options) }" frameborder="0" allowfullscreen></iframe>)
+  end
 
   def self.youtube_regular_url(youtube_url, **options)
     vid_id = extract_video_id(youtube_url)

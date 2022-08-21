@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'youtube_rails'
-  s.version     = '1.2.2'
+  s.version     = '1.2.3'
   s.date        = '2016-04-11'
   s.summary     = "YouTube address helper"
   s.description = "Parse youtube addresses and generate embed html code"

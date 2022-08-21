@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  gem:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: youtube_rails_app
+    volumes:
+      - .:/app
+      - gem_cache:/usr/local/bundle/gems
+  
+volumes:
+  gem_cache:

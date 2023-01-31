@@ -1,7 +1,24 @@
 require 'test/unit'
+require 'base64'
+require 'securerandom'
 require 'youtube_rails'
 
 class TestYouTubeRails < Test::Unit::TestCase
+  # The URL schemes to test against
+  SCHEMES = ['http://', 'https://', '']
+  
+  # The schemes are not included here, because these are permuted programatically.
+  # Domains are included, because the URL can depend on the domain.
+  CANDIDATE_URLS = [
+    'www.youtube.com/watch?v=XXXXXXXXXXX',
+  ]
+
+  # Generates a random YouTube ID
+  def random_id
+    # 11 chars of RFC4648 base64url A-Z, a-z, 0-9, -, _ => just enough for 64 bits (actually 66)
+    Base64.urlsafe_encode64(SecureRandom.random_bytes(8), padding: false)
+  end
+
   def test_invalid_youtube_url
     assert_equal nil, YouTubeRails.extract_video_id("not a valid url")
     assert YouTubeRails.has_invalid_chars?("http://www.youtube.com/watch?v=something<script>badthings</script>")
@@ -21,6 +38,16 @@ class TestYouTubeRails < Test::Unit::TestCase
     assert_equal "cD4TAgdS_Xw", YouTubeRails.extract_video_id("http://youtu.be/cD4TAgdS_Xw")
     assert_equal "cD4TAgdS_Xw", YouTubeRails.extract_video_id("https://youtu.be/cD4TAgdS_Xw")
     assert_equal "cD4TAgdS_Xw", YouTubeRails.extract_video_id("youtu.be/cD4TAgdS_Xw")
+  end
+
+  # This test added to supplement the above, in a more generic way.
+  def test_extract_video_id
+    CANDIDATE_URLS.each do |url|
+      scheme = SCHEMES.sample
+      id = random_id
+      url = scheme + url.sub('XXXXXXXXXXX', id)
+      assert_equal id, YouTubeRails.extract_video_id(url), "when testing case: #{url}"
+    end 
   end
 
   def test_youtube_urls_conversion

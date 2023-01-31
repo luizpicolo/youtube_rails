@@ -34,6 +34,7 @@ class TestYouTubeRails < Test::Unit::TestCase
     assert_equal nil, YouTubeRails.extract_video_id("not a valid url")
     assert YouTubeRails.has_invalid_chars?("http://www.youtube.com/watch?v=something<script>badthings</script>")
     assert_equal nil, YouTubeRails.extract_video_id("http://www.youtube.com/watch?v=something<script>badthings</script>")
+    assert_equal nil, YouTubeRails.extract_video_id("http://www.youtube,com/watch?v=something")
   end
 
   def test_old_style_youtube_url_returns_code

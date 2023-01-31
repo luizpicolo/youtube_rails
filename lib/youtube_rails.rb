@@ -23,19 +23,19 @@ class YouTubeRails
   DOMAIN_REGEX = DOMAIN_ALIASES.map do |placeholder, domains|
     [placeholder, _domains_to_regex(domains)]
   end.to_h
-  
+
+  ID = %r{(?<id>[0-9a-zA-Z_-]+)} # URL-safe Base64 ID
+  ANYPARAMS = %r{([^;&]*[&;])*} # Zero or more URL parameters
   URL_FORMATS = [
-    # regular:
-    %r{^watch\?(.*\&)?v=(?<id>[^&]+)}i,
-    # embed:
-    %r{^embed/(?<id>[^&]+)}i,
-    # embed_as3:
-    %r{^v/(?<id>[^?]+)}i,
-    #  chromeless_as3:
-    %r{^apiplayer\?video_id=(?<id>[^&]+)}i,
+    %r{^(watch|ytscreeningroom)\?#{ANYPARAMS}v=#{ID}}mi,
+    %r{^(v|e)/#{ID}}mi,
+    %r{^(embed|shorts)/#{ID}}mi,
+    %r{^oembed\?#{ANYPARAMS}url=[^&;]+watch(%3f|\?)v(=|%3d)#{ID}}mi, # accepts encoded delims
+    %r{^attribution_link\?#{ANYPARAMS}u=(/|%2f)watch(%3f|\?)v(=|%3d)#{ID}}mi, # ditto
+    %r{^apiplayer\?#{ANYPARAMS}video_id=#{ID}}mi,
   ]
   SHORTURL_FORMATS = [
-    %r{^(?<id>[^&]+)}i,
+    %r{^#{ID}}i,
   ]
   
   # See reserved and unreserved characters here:

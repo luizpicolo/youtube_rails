@@ -7,21 +7,30 @@ class TestYouTubeRails < Test::Unit::TestCase
   # The URL schemes to test against.
   # Some URLs in webpage sources uses the // prefix to be https-agnostic.
   SCHEMES = ['http://', 'https://', 'HTTP://', 'HTTPS://', '//', '']
+
+  # Some URLs are interchangeable with others. We test against the aliases.
+  DOMAIN_ALIASES = {
+    'youtube.com' => %w{www.youtube.com
+                            youtube.com
+                          m.youtube.com
+                        www.youtube-nocookie.com},
+    'youtu.be' => %w{youtu.be},
+  }
   
   # The schemes are not included here, because these are permuted programatically.
-  # Domains are included, because the URL can depend on the domain.
+  # Domains are included, because the URL can depend on the domain. Note, however
+  # that these domains must match a key in DOMAIN_ALIASES.
   CANDIDATE_URLS = [
-    'www.youtube.com/watch?v=XXXXXXXXXXX',
-    'WWW.YOUTUBE.COM/WATCH?V=XXXXXXXXXXX',
+    'youtube.com/watch?v=XXXXXXXXXXX',
 
     # Add some URLs with the full range of valid URI characters
     # (expanding those allowed previously to include `~#\[\]@;%]`)
     # See reserved and unreserved patterns here: https://www.rfc-editor.org/rfc/rfc3986#appendix-A
     # % Must also be included as it is used for character escapes.
     # Some URLs are not strictly correct YT URLs - but are valid URIs
-    'www.youtube.com/watch?v=XXXXXXXXXXX&feature=channel#t=0m10s', # hash delimits anchors
-    'www.youtube.com/watch?v=XXXXXXXXXXX&fs=1;hl=en_US;rel=0', # semicolon is a valid alt to &
-    'www.youtube.com/watch?v=XXXXXXXXXXX&codes=[V@lid%20]', # the other characters!
+    'youtube.com/watch?v=XXXXXXXXXXX&feature=channel#t=0m10s', # hash delimits anchors
+    'youtube.com/watch?v=XXXXXXXXXXX&fs=1;hl=en_US;rel=0', # semicolon is a valid alt to &
+    'youtube.com/watch?v=XXXXXXXXXXX&codes=[V@lid%20]', # the other characters!
 
   ]
 
@@ -59,6 +68,18 @@ class TestYouTubeRails < Test::Unit::TestCase
       scheme = SCHEMES.sample
       id = random_id
       url = scheme + url.sub('XXXXXXXXXXX', id)
+
+      # Replace placeholder URLs with one of the variants (in either case)
+      DOMAIN_ALIASES.each_pair do |placeholder, alternatives|
+        next unless url.start_with?(placeholder)
+
+        domain = alternatives.sample
+        domain.upcase! if rand(2) == 1
+        
+        url[0, placeholder.length] = domain
+        break
+      end
+      
       assert_equal id, YouTubeRails.extract_video_id(url), "when testing case: #{url}"
     end 
   end

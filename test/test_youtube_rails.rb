@@ -23,6 +23,14 @@ class TestYouTubeRails < Test::Unit::TestCase
     'youtube.com/watch?v=XXXXXXXXXXX&fs=1;hl=en_US;rel=0', # semicolon is a valid alt to &
     'youtube.com/watch?v=XXXXXXXXXXX&codes=[V@lid%20]', # the other characters!
 
+    # These formats gathered from https://stackoverflow.com/a/70512384
+    'www.youtube.com/watch?v=XXXXXXXXXXX', # Normal Url
+    'youtu.be/XXXXXXXXXXX', # Share Url
+    'youtu.be/XXXXXXXXXXX?t=6', # Share Url with start time
+    'm.youtube.com/watch?v=XXXXXXXXXXX&list=RDXXXXXXXXXXX&start_radio=1', # Mobile browser url
+    'www.youtube.com/watch?v=XXXXXXXXXXX&list=RDXXXXXXXXXXX&start_radio=1&rv=smKgVuS', # Long url
+    'www.youtube.com/watch?v=XXXXXXXXXXX&list=RDXXXXXXXXXXX&start_radio=1&rv=XXXXXXXXXXX&t=38', # Long url with start time
+    'youtube.com/shorts/XXXXXXXXXXX', # Youtube Shorts
   ]
 
   # Generates a random YouTube ID

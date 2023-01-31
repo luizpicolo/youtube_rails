@@ -28,8 +28,7 @@ class YouTubeRails
   ANYPARAMS = %r{([^;&]*[&;])*} # Zero or more URL parameters
   URL_FORMATS = [
     %r{^(watch|ytscreeningroom)\?#{ANYPARAMS}v=#{ID}}mi,
-    %r{^(v|e)/#{ID}}mi,
-    %r{^(embed|shorts)/#{ID}}mi,
+    %r{^(v|e|embed|shorts)/#{ID}}mi,
     %r{^oembed\?#{ANYPARAMS}url=[^&;]+watch(%3f|\?)v(=|%3d)#{ID}}mi, # accepts encoded delims
     %r{^attribution_link\?#{ANYPARAMS}u=(/|%2f)watch(%3f|\?)v(=|%3d)#{ID}}mi, # ditto
     %r{^apiplayer\?#{ANYPARAMS}video_id=#{ID}}mi,

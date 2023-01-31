@@ -8,15 +8,6 @@ class TestYouTubeRails < Test::Unit::TestCase
   # Some URLs in webpage sources uses the // prefix to be https-agnostic.
   SCHEMES = ['http://', 'https://', 'HTTP://', 'HTTPS://', '//', '']
 
-  # Some URLs are interchangeable with others. We test against the aliases.
-  DOMAIN_ALIASES = {
-    'youtube.com' => %w{www.youtube.com
-                            youtube.com
-                          m.youtube.com
-                        www.youtube-nocookie.com},
-    'youtu.be' => %w{youtu.be},
-  }
-  
   # The schemes are not included here, because these are permuted programatically.
   # Domains are included, because the URL can depend on the domain. Note, however
   # that these domains must match a key in DOMAIN_ALIASES.
@@ -70,7 +61,7 @@ class TestYouTubeRails < Test::Unit::TestCase
       url = scheme + url.sub('XXXXXXXXXXX', id)
 
       # Replace placeholder URLs with one of the variants (in either case)
-      DOMAIN_ALIASES.each_pair do |placeholder, alternatives|
+      YouTubeRails::DOMAIN_ALIASES.each_pair do |placeholder, alternatives|
         next unless url.start_with?(placeholder)
 
         domain = alternatives.sample

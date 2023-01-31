@@ -1,13 +1,43 @@
 class YouTubeRails
-  SCHEME_FORMAT = %r{(https?:|)//}i
-  URL_FORMATS = {
-      regular: %r{^(www\.)?youtube\.com/watch\?(.*\&)?v=(?<id>[^&]+)}i,
-      shortened: %r{^(www\.)?youtu\.be/(?<id>[^&]+)}i,
-      embed: %r{^(www\.)?youtube\.com/embed/(?<id>[^&]+)}i,
-      embed_as3: %r{^(www\.)?youtube\.com/v/(?<id>[^?]+)}i,
-      chromeless_as3: %r{^(www\.)?youtube\.com/apiplayer\?video_id=(?<id>[^&]+)}i,
-  }
+  # Converts a list of domains into a regex matching them at the start of a string
+  def self._domains_to_regex(domains)
+    pattern = [
+      '^(',
+      domains.map {|d| Regexp.quote(d) }.join('|'),
+      ')/'
+    ].join('')
+    
+    Regexp.new(pattern, Regexp::IGNORECASE | Regexp::MULTILINE)
+  end
 
+  SCHEME_FORMAT = %r{(https?:|)//}i
+  SHORTURL_DOMAIN = 'youtu.be'
+  # Some URLs are interchangeable with others. The keys here are just an ID.
+  DOMAIN_ALIASES = {
+    'youtube.com' => %w{www.youtube.com
+                            youtube.com
+                          m.youtube.com
+                        www.youtube-nocookie.com},
+    SHORTURL_DOMAIN => [SHORTURL_DOMAIN],
+  }
+  DOMAIN_REGEX = DOMAIN_ALIASES.map do |placeholder, domains|
+    [placeholder, _domains_to_regex(domains)]
+  end.to_h
+  
+  URL_FORMATS = [
+    # regular:
+    %r{^watch\?(.*\&)?v=(?<id>[^&]+)}i,
+    # embed:
+    %r{^embed/(?<id>[^&]+)}i,
+    # embed_as3:
+    %r{^v/(?<id>[^?]+)}i,
+    #  chromeless_as3:
+    %r{^apiplayer\?video_id=(?<id>[^&]+)}i,
+  ]
+  SHORTURL_FORMATS = [
+    %r{^(?<id>[^&]+)}i,
+  ]
+  
   # See reserved and unreserved characters here:
   # https://www.rfc-editor.org/rfc/rfc3986#appendix-A
   # Note, % character must also be included, as this is used in pct-encoded escapes.
@@ -19,12 +49,23 @@ class YouTubeRails
 
   def self.extract_video_id(youtube_url)
     return nil if has_invalid_chars?(youtube_url)
-
     youtube_url = youtube_url
                     .strip # remove whitespace before and after
                     .sub(%r{^#{SCHEME_FORMAT}}, '') # remove valid schemes
 
-    URL_FORMATS.values.inject(nil) do |result, format_regex|
+    # Deal with shortened URLs as a special case
+    if youtube_url.sub!(DOMAIN_REGEX['youtu.be'], '')
+      SHORTURL_FORMATS.each do |regex|
+        match = youtube_url.match(regex)
+        return match[:id] if match
+      end
+      return nil # No matches
+    end
+
+    # Ensure one of the regular allows domains matches
+    return nil unless youtube_url.sub!(DOMAIN_REGEX['youtube.com'], '')
+    
+    URL_FORMATS.inject(nil) do |result, format_regex|
       match = format_regex.match(youtube_url)
       match ? match[:id] : result
     end

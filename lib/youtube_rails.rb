@@ -1,11 +1,11 @@
 class YouTubeRails
   SCHEME_FORMAT = %r{(https?:|)//}
   URL_FORMATS = {
-      regular: %r{^(www\.)?youtube.com/watch\?(.*\&)?v=(?<id>[^&]+)},
-      shortened: %r{^(www\.)?youtu.be/(?<id>[^&]+)},
-      embed: %r{^(www\.)?youtube.com/embed/(?<id>[^&]+)},
-      embed_as3: %r{^(www\.)?youtube.com/v/(?<id>[^?]+)},
-      chromeless_as3: %r{^(www\.)?youtube.com/apiplayer\?video_id=(?<id>[^&]+)},
+      regular: %r{^(www\.)?youtube\.com/watch\?(.*\&)?v=(?<id>[^&]+)},
+      shortened: %r{^(www\.)?youtu\.be/(?<id>[^&]+)},
+      embed: %r{^(www\.)?youtube\.com/embed/(?<id>[^&]+)},
+      embed_as3: %r{^(www\.)?youtube\.com/v/(?<id>[^?]+)},
+      chromeless_as3: %r{^(www\.)?youtube\.com/apiplayer\?video_id=(?<id>[^&]+)},
   }
 
   # See reserved and unreserved characters here:

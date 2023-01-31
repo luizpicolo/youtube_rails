@@ -6,12 +6,13 @@ require 'youtube_rails'
 class TestYouTubeRails < Test::Unit::TestCase
   # The URL schemes to test against.
   # Some URLs in webpage sources uses the // prefix to be https-agnostic.
-  SCHEMES = ['http://', 'https://', '//', '']
+  SCHEMES = ['http://', 'https://', 'HTTP://', 'HTTPS://', '//', '']
   
   # The schemes are not included here, because these are permuted programatically.
   # Domains are included, because the URL can depend on the domain.
   CANDIDATE_URLS = [
     'www.youtube.com/watch?v=XXXXXXXXXXX',
+    'WWW.YOUTUBE.COM/WATCH?V=XXXXXXXXXXX',
 
     # Add some URLs with the full range of valid URI characters
     # (expanding those allowed previously to include `~#\[\]@;%]`)

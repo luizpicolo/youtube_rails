@@ -4,8 +4,9 @@ require 'securerandom'
 require 'youtube_rails'
 
 class TestYouTubeRails < Test::Unit::TestCase
-  # The URL schemes to test against
-  SCHEMES = ['http://', 'https://', '']
+  # The URL schemes to test against.
+  # Some URLs in webpage sources uses the // prefix to be https-agnostic.
+  SCHEMES = ['http://', 'https://', '//', '']
   
   # The schemes are not included here, because these are permuted programatically.
   # Domains are included, because the URL can depend on the domain.

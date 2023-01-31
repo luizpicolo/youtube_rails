@@ -1,10 +1,11 @@
 class YouTubeRails
+  SCHEME_FORMAT = %r{(https?:|)//}
   URL_FORMATS = {
-      regular: %r{^(https?://)?(www\.)?youtube.com/watch\?(.*\&)?v=(?<id>[^&]+)},
-      shortened: %r{^(https?://)?(www\.)?youtu.be/(?<id>[^&]+)},
-      embed: %r{^(https?://)?(www\.)?youtube.com/embed/(?<id>[^&]+)},
-      embed_as3: %r{^(https?://)?(www\.)?youtube.com/v/(?<id>[^?]+)},
-      chromeless_as3: %r{^(https?://)?(www\.)?youtube.com/apiplayer\?video_id=(?<id>[^&]+)},
+      regular: %r{^(www\.)?youtube.com/watch\?(.*\&)?v=(?<id>[^&]+)},
+      shortened: %r{^(www\.)?youtu.be/(?<id>[^&]+)},
+      embed: %r{^(www\.)?youtube.com/embed/(?<id>[^&]+)},
+      embed_as3: %r{^(www\.)?youtube.com/v/(?<id>[^?]+)},
+      chromeless_as3: %r{^(www\.)?youtube.com/apiplayer\?video_id=(?<id>[^&]+)},
   }
 
   # See reserved and unreserved characters here:
@@ -18,6 +19,10 @@ class YouTubeRails
 
   def self.extract_video_id(youtube_url)
     return nil if has_invalid_chars?(youtube_url)
+
+    youtube_url = youtube_url
+                    .strip # remove whitespace before and after
+                    .sub(%r{^#{SCHEME_FORMAT}}, '') # remove valid schemes
 
     URL_FORMATS.values.inject(nil) do |result, format_regex|
       match = format_regex.match(youtube_url)

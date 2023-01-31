@@ -11,6 +11,16 @@ class TestYouTubeRails < Test::Unit::TestCase
   # Domains are included, because the URL can depend on the domain.
   CANDIDATE_URLS = [
     'www.youtube.com/watch?v=XXXXXXXXXXX',
+
+    # Add some URLs with the full range of valid URI characters
+    # (expanding those allowed previously to include `~#\[\]@;%]`)
+    # See reserved and unreserved patterns here: https://www.rfc-editor.org/rfc/rfc3986#appendix-A
+    # % Must also be included as it is used for character escapes.
+    # Some URLs are not strictly correct YT URLs - but are valid URIs
+    'www.youtube.com/watch?v=XXXXXXXXXXX&feature=channel#t=0m10s', # hash delimits anchors
+    'www.youtube.com/watch?v=XXXXXXXXXXX&fs=1;hl=en_US;rel=0', # semicolon is a valid alt to &
+    'www.youtube.com/watch?v=XXXXXXXXXXX&codes=[V@lid%20]', # the other characters!
+
   ]
 
   # Generates a random YouTube ID

@@ -1,13 +1,13 @@
 class YouTubeRails
   URL_FORMATS = {
-      regular: /^(https?:\/\/)?(www\.)?youtube.com\/watch\?(.*\&)?v=(?<id>[^&]+)/,
-      shortened: /^(https?:\/\/)?(www\.)?youtu.be\/(?<id>[^&]+)/,
-      embed: /^(https?:\/\/)?(www\.)?youtube.com\/embed\/(?<id>[^&]+)/,
-      embed_as3: /^(https?:\/\/)?(www\.)?youtube.com\/v\/(?<id>[^?]+)/,
-      chromeless_as3: /^(https?:\/\/)?(www\.)?youtube.com\/apiplayer\?video_id=(?<id>[^&]+)/
+      regular: %r{^(https?://)?(www\.)?youtube.com/watch\?(.*\&)?v=(?<id>[^&]+)},
+      shortened: %r{^(https?://)?(www\.)?youtu.be/(?<id>[^&]+)},
+      embed: %r{^(https?://)?(www\.)?youtube.com/embed/(?<id>[^&]+)},
+      embed_as3: %r{^(https?://)?(www\.)?youtube.com/v/(?<id>[^?]+)},
+      chromeless_as3: %r{^(https?://)?(www\.)?youtube.com/apiplayer\?video_id=(?<id>[^&]+)},
   }
 
-  INVALID_CHARS = /[^a-zA-Z0-9\:\/\?\=\&\$\-\_\.\+\!\*\'\(\)\,]/
+  INVALID_CHARS = %r{[^a-zA-Z0-9:/?=&$\-_.+!*'(),]}
 
   def self.has_invalid_chars?(youtube_url)
     !INVALID_CHARS.match(youtube_url).nil?

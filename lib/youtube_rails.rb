@@ -7,7 +7,10 @@ class YouTubeRails
       chromeless_as3: %r{^(https?://)?(www\.)?youtube.com/apiplayer\?video_id=(?<id>[^&]+)},
   }
 
-  INVALID_CHARS = %r{[^a-zA-Z0-9:/?=&$\-_.+!*'(),]}
+  # See reserved and unreserved characters here:
+  # https://www.rfc-editor.org/rfc/rfc3986#appendix-A
+  # Note, % character must also be included, as this is used in pct-encoded escapes.
+  INVALID_CHARS = %r{[^a-zA-Z0-9:/?=&$\-_.+!*'(),~#\[\]@;%]}
 
   def self.has_invalid_chars?(youtube_url)
     !INVALID_CHARS.match(youtube_url).nil?

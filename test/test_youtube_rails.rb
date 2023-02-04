@@ -1,11 +1,112 @@
 require 'test/unit'
+require 'base64'
+require 'securerandom'
 require 'youtube_rails'
 
 class TestYouTubeRails < Test::Unit::TestCase
+  # The URL schemes to test against.
+  # Some URLs in webpage sources uses the // prefix to be https-agnostic.
+  SCHEMES = ['http://', 'https://', 'HTTP://', 'HTTPS://', '//', '']
+
+  # The schemes are not included here, because these are permuted programatically.
+  # Domains are included, because the URL can depend on the domain. Note, however
+  # that these domains must match a key in DOMAIN_ALIASES.
+  CANDIDATE_URLS = [
+    'youtube.com/watch?v=XXXXXXXXXXX',
+
+    # Add some URLs with the full range of valid URI characters
+    # (expanding those allowed previously to include `~#\[\]@;%]`)
+    # See reserved and unreserved patterns here: https://www.rfc-editor.org/rfc/rfc3986#appendix-A
+    # % Must also be included as it is used for character escapes.
+    # Some URLs are not strictly correct YT URLs - but are valid URIs
+    'youtube.com/watch?v=XXXXXXXXXXX&feature=channel#t=0m10s', # hash delimits anchors
+    'youtube.com/watch?v=XXXXXXXXXXX&fs=1;hl=en_US;rel=0', # semicolon is a valid alt to &
+    'youtube.com/watch?v=XXXXXXXXXXX&codes=[V@lid%20]', # the other characters!
+
+    # These formats gathered from https://stackoverflow.com/a/70512384
+    'www.youtube.com/watch?v=XXXXXXXXXXX', # Normal Url
+    'youtu.be/XXXXXXXXXXX', # Share Url
+    'youtu.be/XXXXXXXXXXX?t=6', # Share Url with start time
+    'm.youtube.com/watch?v=XXXXXXXXXXX&list=RDXXXXXXXXXXX&start_radio=1', # Mobile browser url
+    'www.youtube.com/watch?v=XXXXXXXXXXX&list=RDXXXXXXXXXXX&start_radio=1&rv=smKgVuS', # Long url
+    'www.youtube.com/watch?v=XXXXXXXXXXX&list=RDXXXXXXXXXXX&start_radio=1&rv=XXXXXXXXXXX&t=38', # Long url with start time
+    'youtube.com/shorts/XXXXXXXXXXX', # Youtube Shorts
+
+    # These from
+    # https://gist.github.com/rodrigoborgesdeoliveira/987683cfbfcc8d800192da1e73adc486
+    # (on 29/1/2023). Some examples have been commented out as they
+    # seem not to link to videos, so should not parse.
+    'www.youtube.com/watch?v=XXXXXXXXXXX',
+    'www.youtube.com/v/XXXXXXXXXXX?version=3&autohide=1',
+    'youtu.be/XXXXXXXXXXX',
+    'www.youtube.com/oembed?url=http%3A//www.youtube.com/watch?v%3DXXXXXXXXXXX&format=json',
+    'www.youtube.com/attribution_link?a=JdfC0C9V6ZI&u=%2Fwatch%3Fv%3DXXXXXXXXXXX%26feature%3Dshare',
+    'www.youtube.com/attribution_link?a=8g8kPrPIi-ecwIsS&u=/watch%3Fv%3DXXXXXXXXXXX%26feature%3Dem-uploademail',
+    'www.youtube.com/watch?v=XXXXXXXXXXX&feature=em-uploademail',
+    'www.youtube.com/watch?v=XXXXXXXXXXX&feature=feedrec_grec_index',
+#    'www.youtube.com/user/IngridMichaelsonVEVO#p/a/u/1/XXXXXXXXXXX',
+    'www.youtube.com/v/XXXXXXXXXXX?fs=1&amp;hl=en_US&amp;rel=0',
+    'www.youtube.com/watch?v=XXXXXXXXXXX#t=0m10s',
+    'www.youtube.com/embed/XXXXXXXXXXX?rel=0',
+    'www.youtube-nocookie.com/embed/XXXXXXXXXXX?rel=0',
+    'www.youtube-nocookie.com/embed/XXXXXXXXXXX?rel=0',
+#    'www.youtube.com/user/Scobleizer#p/u/1/XXXXXXXXXXX',
+    'www.youtube.com/watch?v=XXXXXXXXXXX&feature=channel',
+    'www.youtube.com/watch?v=XXXXXXXXXXX&playnext_from=TL&videos=osPknwzXEas&feature=sub',
+    'www.youtube.com/ytscreeningroom?v=XXXXXXXXXXX',
+    'www.youtube.com/watch?v=XXXXXXXXXXX&feature=youtu.be',
+#    'www.youtube.com/user/Scobleizer#p/u/1/XXXXXXXXXXX?rel=0',
+    'www.youtube.com/embed/XXXXXXXXXXX?rel=0',
+    'www.youtube.com/watch?v=XXXXXXXXXXX',
+    'youtube.com/v/XXXXXXXXXXX?feature=youtube_gdata_player',
+#    'youtube.com/?v=XXXXXXXXXXX&feature=youtube_gdata_player',
+    'www.youtube.com/watch?v=XXXXXXXXXXX&feature=youtube_gdata_player',
+#    'youtube.com/?vi=XXXXXXXXXXX&feature=youtube_gdata_player',
+    'youtube.com/watch?v=XXXXXXXXXXX&feature=youtube_gdata_player',
+#    'youtube.com/watch?vi=XXXXXXXXXXX&feature=youtube_gdata_player',
+#    'youtube.com/vi/XXXXXXXXXXX?feature=youtube_gdata_player',
+    'youtu.be/XXXXXXXXXXX?feature=youtube_gdata_player',
+#    'www.youtube.com/user/SilkRoadTheatre#p/a/u/2/XXXXXXXXXXX',
+    'www.youtube.com/watch?v=XXXXXXXXXXX&list=PLGup6kBfcU7Le5laEaCLgTKtlDcxMqGxZ&index=106&shuffle=2655',
+    'www.youtube.com/v/XXXXXXXXXXX?fs=1&hl=en_US&rel=0',
+    'www.youtube.com/watch?v=XXXXXXXXXXX&feature=feedrec_grec_index',
+    'www.youtube.com/watch?v=XXXXXXXXXXX#t=0m10s',
+    'www.youtube.com/embed/XXXXXXXXXXX',
+    'www.youtube.com/v/XXXXXXXXXXX',
+    'www.youtube.com/e/XXXXXXXXXXX',
+#    'www.youtube.com/?v=XXXXXXXXXXX',
+    'www.youtube.com/watch?feature=player_embedded&v=XXXXXXXXXXX',
+#    'www.youtube.com/?feature=player_embedded&v=XXXXXXXXXXX',
+#    'www.youtube.com/user/IngridMichaelsonVEVO#p/u/11/XXXXXXXXXXX',
+    'www.youtube-nocookie.com/v/XXXXXXXXXXX?version=3&hl=en_US&rel=0',
+#    'www.youtube.com/user/dreamtheater#p/u/1/XXXXXXXXXXX',
+    'youtu.be/XXXXXXXXXXX?list=PLToa5JuFMsXTNkrLJbRlB--76IAOjRM9b',
+    'www.youtube.com/watch?v=XXXXXXXXXXX&feature=youtu.be',
+    'youtu.be/XXXXXXXXXXX&feature=channel',
+    'www.youtube.com/ytscreeningroom?v=XXXXXXXXXXX',
+    'www.youtube.com/embed/XXXXXXXXXXX?rel=0',
+#    'youtube.com/vi/XXXXXXXXXXX&feature=channel',
+#    'youtube.com/?v=XXXXXXXXXXX&feature=channel',
+#    'youtube.com/?feature=channel&v=XXXXXXXXXXX',
+#    'youtube.com/?vi=XXXXXXXXXXX&feature=channel',
+    'youtube.com/watch?v=XXXXXXXXXXX&feature=channel',
+#    'youtube.com/watch?vi=XXXXXXXXXXX&feature=channel',
+    'm.youtube.com/watch?v=XXXXXXXXXXX',
+    'www.youtube.com/watch?app=desktop&v=XXXXXXXXXXX',
+    'm.youtube.com/watch?app=desktop&v=XXXXXXXXXXX',    
+  ]
+
+  # Generates a random YouTube ID
+  def random_id
+    # 11 chars of RFC4648 base64url A-Z, a-z, 0-9, -, _ => just enough for 64 bits (actually 66)
+    Base64.urlsafe_encode64(SecureRandom.random_bytes(8), padding: false)
+  end
+
   def test_invalid_youtube_url
     assert_equal nil, YouTubeRails.extract_video_id("not a valid url")
     assert YouTubeRails.has_invalid_chars?("http://www.youtube.com/watch?v=something<script>badthings</script>")
     assert_equal nil, YouTubeRails.extract_video_id("http://www.youtube.com/watch?v=something<script>badthings</script>")
+    assert_equal nil, YouTubeRails.extract_video_id("http://www.youtube,com/watch?v=something")
   end
 
   def test_old_style_youtube_url_returns_code
@@ -21,6 +122,28 @@ class TestYouTubeRails < Test::Unit::TestCase
     assert_equal "cD4TAgdS_Xw", YouTubeRails.extract_video_id("http://youtu.be/cD4TAgdS_Xw")
     assert_equal "cD4TAgdS_Xw", YouTubeRails.extract_video_id("https://youtu.be/cD4TAgdS_Xw")
     assert_equal "cD4TAgdS_Xw", YouTubeRails.extract_video_id("youtu.be/cD4TAgdS_Xw")
+  end
+
+  # This test added to supplement the above, in a more generic way.
+  def test_extract_video_id
+    CANDIDATE_URLS.each do |url|
+      scheme = SCHEMES.sample
+      id = random_id
+      url = scheme + url.sub('XXXXXXXXXXX', id)
+
+      # Replace placeholder URLs with one of the variants (in either case)
+      YouTubeRails::DOMAIN_ALIASES.each_pair do |placeholder, alternatives|
+        next unless url.start_with?(placeholder)
+
+        domain = alternatives.sample
+        domain.upcase! if rand(2) == 1
+        
+        url[0, placeholder.length] = domain
+        break
+      end
+      
+      assert_equal id, YouTubeRails.extract_video_id(url), "when testing case: #{url}"
+    end 
   end
 
   def test_youtube_urls_conversion
